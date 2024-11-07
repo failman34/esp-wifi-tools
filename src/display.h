@@ -2,6 +2,8 @@
 #ifndef Display_h
 #define Display_h
 
+#define y_offset 7
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <scan.h>
@@ -25,7 +27,7 @@ private:
 
 
     
-    menu main_menu = {{"scan wifi", "select", "deauth", "eapol sniff", "settings", "SS", "AAAA", "lox", "suka", "eblan"}, 10};
+    menu main_menu = {{"scan wifi", "select", "deauth", "eapol sniff", "settings"}, 5};
     menu* menu[5] = {&main_menu};
 	char moreInfo[6][18];
     uint selected_AP;

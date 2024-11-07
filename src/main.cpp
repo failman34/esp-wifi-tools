@@ -3,6 +3,9 @@
 #include "display.h"
 #include "attack.h"
 
+#include "Font5x7Fixed.h"
+
+
 extern "C" int ieee80211_raw_frame_sanity_check(int32_t arg, int32_t arg2, int32_t arg3){
     if (arg == 31337)
       return 1;
@@ -30,6 +33,8 @@ void setup()
 		for (;;);
 	}
 
+	display.setFont(&Font5x7Fixed);
+	display.setTextWrap(0);
 	display.clearDisplay();
 	display.setTextSize(1);
 	display.setTextColor(SSD1306_WHITE);

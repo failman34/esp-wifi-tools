@@ -23,10 +23,10 @@ void Display::drawMenu()
 		{
 			if (i + index == menu_index)
 			{
-				display.setCursor(0, (i * 10));
+				display.setCursor(0, (i * 10)+y_offset);
 				display.print(">");  //символ выбора
 			}
-			display.setCursor(10, (i * 10));
+			display.setCursor(10, (i * 10)+y_offset);
 			display.print(menu[menu_level]->items[index+i]);
 			Serial.println(menu[menu_level]->items[index+i]);
 		}
@@ -50,7 +50,7 @@ void Display::draw_WiFi_menu()
 		index = menu_index + 2 - max_len;
 	}
 
-	display.setCursor(0, 0);
+	display.setCursor(0, 0+y_offset);
 	
 	for (int i = 0; i < max_len; i++)	// рисование
 	{
@@ -58,19 +58,19 @@ void Display::draw_WiFi_menu()
 		{
 			if (i-1 + index == menu_index)
 			{
-				display.setCursor(0, i * 8);
+				display.setCursor(0, (i * 8)+y_offset);
 				display.print(">");  //символ выбора
 			}
 			if(i-1 + index != -1 && scan.AP_list[(i-1 + index)].selected == true){
-				display.setCursor(8, i * 8);
+				display.setCursor(8, (i * 8)+y_offset);
 				display.print("*");  //символ выбора
 			}
-			display.setCursor(16, i * 8);
+			display.setCursor(16, (i * 8)+y_offset);
 			if(index == 0 && i-1 == -1){
 				display.print("Back");
 			}
 			else{
-				display.printf("%.*s", 18, scan.AP_list[(index + i)-1].ssid);
+				display.printf("%s", scan.AP_list[(index + i)-1].ssid);
 			}
 		}
 		else
@@ -83,28 +83,38 @@ void Display::draw_WiFi_menu()
 
 void Display::drawAnotherMenu(){
 	display.clearDisplay();
-	display.setCursor(0, 0);
-	display.printf("SSID:%s\n", scan.AP_list[selected_AP].ssid);
+	display.setTextWrap(1);
+	display.setCursor(0, 0+y_offset);
+	display.printf("SSID:%s", scan.AP_list[selected_AP].ssid);
+
+	uint8_t y = display.getCursorY()-7;
 	
+	display.setCursor(0, y+8+y_offset);
 	display.printf("MAC %02X:%02X:%02X:%02X:%02X:%02X\n", 
 	               scan.AP_list[selected_AP].mac[0], scan.AP_list[selected_AP].mac[1], 
 	               scan.AP_list[selected_AP].mac[2], scan.AP_list[selected_AP].mac[3], 
 	               scan.AP_list[selected_AP].mac[4], scan.AP_list[selected_AP].mac[5]);
+
+	display.setCursor(0, y+16+y_offset);
 	
 	display.printf("Channel:%u\n", scan.AP_list[selected_AP].channel);
+
+	display.setCursor(0, y+24+y_offset);
 	
 	display.printf("RSSI:%d dBm\n", scan.AP_list[selected_AP].rssi);
+
 	
 	display.display(); // Обновление экрана
+	display.setTextWrap(0);
 }
 
 void Display::drawDeauthInfo(uint APs_count, float speed){
 	display.clearDisplay();
-	display.setCursor(37, 17);
+	display.setCursor(37, 17+y_offset);
 	display.println("Deauthing");
-	display.setCursor(7, 27);
+	display.setCursor(7, 27+y_offset);
 	display.printf("Deauth APs Count:%u", APs_count);
-	display.setCursor(7, 37);
+	display.setCursor(7, 37+y_offset);
 	display.printf("Speed:%.2fpkt/s", speed);
 	display.display();
 }
