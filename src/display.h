@@ -10,6 +10,7 @@
 #define AP_LIST_MENU 2
 #define AP_INFO_MENU 3
 #define DEAUTH_MENU 4
+#define SNIFFING 5
 
 
 #include <Arduino.h>
@@ -26,7 +27,7 @@ private:
     uint last_menu_level;
     uint last_menu_index;
 
-    uint menu_index = 0;
+    
 
     struct menu
     {
@@ -35,18 +36,20 @@ private:
     };
 
     menu main_menu = {{"scan wifi", "select", "deauth", "sniffer", "settings"}, 5};
-    menu sniffer_menu = {{"back", "channel: %d", "filters", "sniff eapol"/*only one selected AP(if there are several, then it will be taken first from the list)*/ ,"start"}, 5};
+    menu sniffer_menu = {{"back", "channel: %d", "sniff with deauth"/*only one selected AP(if there are several, then it will be taken first from the list)*/ ,"start"}, 4};
     menu *menu[5] = {&main_menu, &sniffer_menu};
     uint selected_AP;
 
 public:
-    uint8_t menu_level = 0;
+    uint menu_level = 0;
+    uint menu_index = 0;
     void Scan_APs();
     void Select_APs();
     void Deauth();
 
     char **APs;
 
+    void tick();
     void updateMenu();
     void drawMenu();
     void draw_AP_info();

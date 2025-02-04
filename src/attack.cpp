@@ -26,7 +26,6 @@ void Attack::deauthUpdate()
 
             disp.menu_level = 0;
             deauth_attack = 0;
-            disp.updateMenu();
             return;
         }
 

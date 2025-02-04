@@ -4,6 +4,7 @@
 #include "attack.h"
 #include "SPIFFS.h"
 #include "WebServer.h"
+#include "sniffer.h"
 
 #include "Adafruit_PN532.h"
 #include "Font5x7Fixed.h"
@@ -18,13 +19,13 @@ extern "C" int ieee80211_raw_frame_sanity_check(int32_t arg, int32_t arg2, int32
 		return 0;
 }
 
-OneButton btn1(13);
-OneButton btn2(14);
-OneButton btn3(33);
+OneButton btn1(32, 1, 1);
+OneButton btn2(19, 1, 1);
+OneButton btn3(33, 1, 1);
 
 void setup()
 {
-	Serial.begin(921600);
+	Serial.begin(115200);
 	Wire1.begin(25, 26, 100000); // инициализация дисплея
 
 	WiFi.mode(WIFI_AP_STA);
@@ -38,26 +39,11 @@ void setup()
 	}
 
 
-	if (!SPIFFS.begin()) {
-    	Serial.println("An Error has occurred while mounting SPIFFS");
+	SPI.begin(14, 27, 13, 12);
+	
+	if(SD.begin(12)){
+    	Serial.println("Card Mounted");
   	}
-	if(SPIFFS.exists("/capture.pcap")) {SPIFFS.remove("/capture.pcap");}
-
-
-
-
-
-	// 	nfc.begin();
-
-	//   uint32_t versiondata = nfc.getFirmwareVersion();
-	//   if (! versiondata) {
-	//     Serial.print("Didn't find PN53x board");
-	//     while (1); // halt
-	//   }
-	//   // Got ok data, print it out!
-	//   Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
-	//   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
-	//   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
 
 	display.setFont(&Font5x7Fixed);
 	display.setTextWrap(0);
@@ -101,5 +87,7 @@ void loop()
 	btn1.tick(); // ещё кнопочки
 	btn2.tick();
 	btn3.tick();
+	disp.tick();
 	attack.deauthUpdate();
+	sniff.tick();
 }

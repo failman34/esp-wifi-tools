@@ -43,7 +43,7 @@ void PCAP::newPacketSD(uint32_t ts_sec, uint32_t ts_usec, uint32_t len, uint8_t*
     
     uint32_t orig_len = len;
     uint32_t incl_len = len;
-    //if(incl_len > snaplen) incl_len = snaplen; /* safty check that the packet isn't too big (I ran into problems here) */
+    if(incl_len > snaplen) incl_len = snaplen; /* safty check that the packet isn't too big (I ran into problems here) */
     
     filewrite_32(ts_sec);
     filewrite_32(ts_usec);

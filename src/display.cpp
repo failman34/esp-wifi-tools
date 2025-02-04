@@ -3,6 +3,15 @@
 Adafruit_SSD1306 display(128, 64, &Wire1);
 Display disp;
 
+void Display::tick(){
+	if (last_menu_level!=menu_level || last_menu_index != menu_index){
+		last_menu_level = menu_level;
+		last_menu_index=menu_index;
+		updateMenu();
+	}
+}
+
+
 void Display::updateMenu()
 {
 	switch (menu_level)
@@ -16,7 +25,7 @@ void Display::updateMenu()
 		break;
 
 	default:
-		drawMenu();
+		if(menu_level == WIFI_MENU || menu_level == SNIFFER_MENU){drawMenu();}
 		break;
 	}
 }
@@ -158,7 +167,9 @@ void Display::Down()
 			menu_index++;
 			if (menu_index != 0){selected_AP = menu_index-1;}
 			
-			updateMenu();
+			
+		}else{
+			menu_index = 0;
 		}
 		break;
 
@@ -166,7 +177,9 @@ void Display::Down()
 		if (menu_index < menu[menu_level]->size - 1)
 		{
 			menu_index++;
-			updateMenu();
+		}
+		else{
+			menu_index = 0;
 		}
 		break;
 	}
@@ -179,7 +192,7 @@ void Display::Up()
 	{
 		menu_index--;
 		if (menu_level == AP_LIST_MENU && menu_index != 0){selected_AP = menu_index-1;}
-		updateMenu();
+		
 	}
 
 }
@@ -203,7 +216,7 @@ void Display::Select()
 		case 3:
 			menu_level = SNIFFER_MENU;
 			menu_index = 0;
-			updateMenu();
+			
 			//sniff.StartEapolCapture();
 			break;
 		default:
@@ -216,7 +229,7 @@ void Display::Select()
 		{
 		case 0:
 			menu_level = WIFI_MENU;
-			updateMenu();
+			
 			break;
 		case 1:
 			if(sniff.sniffer_channel<13){
@@ -226,21 +239,14 @@ void Display::Select()
 			}
 			updateMenu();
 			break;
-		case 3:
-			if (!sniff.capture_start)
-			{
-				sniff.StartEapolCapture();
-			}else{
-				sniff.StopCapture();
-			}
+		case 2:
+			menu_level = SNIFFING;
+		 	sniff.eapol_capturing = true;
+			sniff.capture_state = true;
 			break;
-		case 4:
-			if (!sniff.capture_start)
-			{
-				sniff.StartCapture();
-			}else{
-				sniff.StopCapture();
-			}
+		case 3:
+			menu_level = SNIFFING;
+			sniff.capture_state = true;
 			break;
 		default:
 			break;
@@ -253,7 +259,7 @@ void Display::Select()
 		case 0:
 			menu_level = WIFI_MENU;
 			menu_index = 0;
-			updateMenu();
+			
 			break;
 
 		default:
@@ -265,13 +271,19 @@ void Display::Select()
 
 	case AP_INFO_MENU:
 		menu_level = AP_LIST_MENU;
-		updateMenu();
+		
 		break;
 
 	case DEAUTH_MENU:
 		attack.deauth_attack = 0;
 		menu_level = WIFI_MENU;
-		updateMenu();
+		
+		break;
+
+	case SNIFFING:
+		sniff.StopCapture();
+		menu_level = SNIFFER_MENU;
+		
 		break;
 
 	default:
@@ -284,7 +296,7 @@ void Display::Hold()
 	if (menu_level == AP_LIST_MENU)
 	{
 		menu_level = AP_INFO_MENU;
-		updateMenu();
+		
 	}
 }
 
@@ -297,7 +309,7 @@ void Display::Select_APs()
 {
 	menu_level = AP_LIST_MENU;
 	menu_index = 0;
-	updateMenu();
+	
 }
 
 void Display::Deauth()
